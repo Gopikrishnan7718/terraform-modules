@@ -1,0 +1,99 @@
+# EC2 Module
+
+This Terraform module creates and manages an Amazon EC2 instance using reusable,
+environment-independent infrastructure patterns.
+
+## Responsibilities
+
+The module is responsible for:
+
+- Creating an EC2 instance.
+- Attaching the supplied subnet.
+- Attaching supplied security groups.
+- Attaching an IAM instance profile.
+- Configuring the root EBS volume.
+- Enabling EBS encryption.
+- Optionally using a customer-managed KMS key.
+- Enforcing IMDSv2 by default.
+- Configuring detailed monitoring.
+- Supporting optional user data.
+- Applying standardized resource tags.
+
+The module does not create or manage:
+
+- VPCs
+- Subnets
+- Security groups
+- IAM roles
+- IAM instance profiles
+- Launch templates
+- Auto Scaling groups
+- Load balancers
+
+Those responsibilities belong to their respective modules.
+
+## Architecture
+
+The EC2 module consumes resources created by other modules:
+
+    VPC
+     |
+     +-- Subnet ID
+     |
+    Security Groups
+     |
+     +-- Security Group IDs
+     |
+    IAM
+     |
+     +-- Instance Profile
+     |
+    KMS
+     |
+     +-- KMS Key ID/ARN
+     |
+     v
+    EC2 Module
+     |
+     v
+    EC2 Instance
+
+The environment layer is responsible for connecting these modules.
+
+## Multiple EC2 Instances
+
+The module creates one EC2 instance per module instance.
+
+Multiple EC2 instances should be created from the environment using
+`for_each` rather than duplicating the EC2 implementation inside the module.
+
+Example:
+
+```hcl
+module "ec2" {
+  source = "../../modules/EC2"
+
+  for_each = var.ec2_instances
+
+  name                      = each.value.name
+  ami_id                    = each.value.ami_id
+  instance_type             = each.value.instance_type
+  subnet_id                 = each.value.subnet_id
+  security_group_ids        = each.value.security_group_ids
+  iam_instance_profile_name = each.value.iam_instance_profile_name
+
+  root_volume_size      = each.value.root_volume_size
+  root_volume_type      = each.value.root_volume_type
+  root_volume_encrypted = each.value.root_volume_encrypted
+  root_volume_kms_key_id = each.value.root_volume_kms_key_id
+
+  enable_detailed_monitoring = each.value.enable_detailed_monitoring
+
+  user_data = each.value.user_data
+
+  instance_initiated_shutdown_behavior = (
+    each.value.instance_initiated_shutdown_behavior
+  )
+
+  common_tags = var.common_tags
+}

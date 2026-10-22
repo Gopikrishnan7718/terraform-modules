@@ -1,0 +1,7 @@
+main.tf :
+
+“Terraform, look at the Availability Zones AWS says are available in this region. 
+Count them. Make sure that number is greater than or equal to the number of Availability Zones I requested. If not, report that the requested count exceeds the available AZs.”
+
+Create an AWS VPC using the CIDR range provided by the vpc_cidr variable. Enable DNS resolution and DNS hostnames. Apply the common tags and add a resource-specific Name tag.
+
