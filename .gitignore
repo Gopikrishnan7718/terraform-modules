@@ -27,3 +27,50 @@ crash.*.log
 .terraformrc
 terraform.rc
 EOF
+
+
+# Terraform working directory
+**/.terraform/*
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Terraform saved plans
+*.tfplan
+*.plan
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Local Terraform CLI configuration
+.terraformrc
+terraform.rc
+
+# Environment-specific variable files
+# Review these rules if you intentionally version safe values.
+*.tfvars
+*.tfvars.json
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Sensitive keys and credentials
+*.pem
+*.key
+*.p12
+*.pfx
+credentials
+credentials.*
+secrets.*
+.env
+.env.*
+
+# Allow safe example templates
+!*.tfvars.example
+!.env.example
+
